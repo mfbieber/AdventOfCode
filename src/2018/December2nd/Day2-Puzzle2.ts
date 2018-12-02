@@ -21,12 +21,13 @@ for (let i = 0; i < array.length; i++) {
         }
         console.log('lineToCheck: ' + lineToCheck + ' - lineToCompareTo: ' + lineToCompareTo + ' - sameChars: ' + sameChars + ' - differentChars: ' + differentChars);
         sameCharsArray.push(sameChars);
+        if(sameChars.length == lineLength - 1) {
+            break;
+        }
     }
-}
-
-for (let results of sameCharsArray) {
-    if (results.length == lineLength - 1) {
-        console.log(results);
+    if(sameCharsArray[sameCharsArray.length - 1].length == lineLength - 1) {
+        console.log(sameCharsArray[sameCharsArray.length - 1]);
+        break;
     }
 }
 }
