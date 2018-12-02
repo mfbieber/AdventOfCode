@@ -16,6 +16,10 @@ Install dependencies:
 
 Build JavaScript files from TypeScript:
 
+    tsc file.ts
+    
+or
+
     npm run build
 
 Run tests:
