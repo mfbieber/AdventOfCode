@@ -4,6 +4,11 @@ let array = fs.readFileSync('src/2018/December1st/input').toString().split("\n")
 let value = 0;
 let results : number[] = [];
 let firstDouble: number;
+let starttime: number = process.uptime();
+
+for (let i = -100000; i < 100000; i++) {
+    results[i] = i;
+}
 
 while (firstDouble == null) {
     frequency();
@@ -13,17 +18,13 @@ function frequency() {
     for (let i of array) {
         let change = parseInt(i);
         value = value + change;
-        for (let j of results) {
-            if (j == value) {
-                firstDouble = j;
-                break;
-            }
-        }
-        console.log(value + ' (' + i + ')');
-        if (firstDouble == value) {
+        if (results[value] == value) {
+            results[value] = 0;
+        } else {
+            firstDouble = value;
             console.log('first double: ' + firstDouble);
+            console.log('this calculation took: ' + (process.uptime() - starttime).toString() + ' s')
             break;
         }
-        results.push(value)
     }
 }
