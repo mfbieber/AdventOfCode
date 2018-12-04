@@ -5,7 +5,6 @@ let sameCharsArray : String[] = [];
 
 let lineLength : number = array[0].length;
 
-
 for (let i = 0; i < array.length; i++) {
     let lineToCheck : String = array[i];
     for (let j = i + 1; j < array.length; j++) {

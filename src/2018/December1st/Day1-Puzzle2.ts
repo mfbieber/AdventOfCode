@@ -1,9 +1,12 @@
+import {isNullOrUndefined} from "util";
+
 const fs = require('fs');
 
 let array = fs.readFileSync('src/2018/December1st/input').toString().split("\n");
 let value = 0;
 let results : number[] = [];
-let firstDouble: number;
+// @ts-ignore
+let firstDouble: number = null;
 let starttime: number = process.uptime();
 
 for (let i = -100000; i < 100000; i++) {
