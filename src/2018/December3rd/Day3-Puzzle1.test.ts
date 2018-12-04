@@ -1,4 +1,4 @@
-import {Claim, FabricsOverlap, SquareInchesOverlaping} from "./Day3-Puzzle1";
+import {Claim, FabricsOverlap, SquareInchesOverlaping, DoesClaimOverlap} from "./Day3-Puzzle1";
 import {expect} from "chai";
 
 describe('Fabrics', () => {
@@ -31,6 +31,12 @@ describe('Fabrics', () => {
         let result = SquareInchesOverlaping.calculate(testClaims);
 
         expect(result).to.equal(4);
+    })
+
+    it('claim 3 is the only claim without overlaps', () => {
+        let result = DoesClaimOverlap.calculate(testClaims);
+
+        expect(result).to.equal(3);
     })
 
 })
