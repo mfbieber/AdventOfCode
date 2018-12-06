@@ -1,7 +1,5 @@
 import {LogEntry, Shifts, determineShiftsPerGuard, determineAsleepTimePerGuard, whichGuardWasAsleepMost} from "./Day4";
 import {expect} from "chai";
-const moment = require("moment");
-import {Moment} from "moment";
 
 describe('NightShifts', () => {
 
@@ -37,8 +35,8 @@ describe('NightShifts', () => {
             new Date('1518-11-04 00:46:00'),
             new Date('1518-11-05 00:45:00'),
             new Date('1518-11-05 00:55:00')]
-
     };
+
     let expectedAsleepTimePerGuard : {[key: number]: number[]} = {
         10: [(20+25+5), 24],
         99: [(10+10+10), 45]
