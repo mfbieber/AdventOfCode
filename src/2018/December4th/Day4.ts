@@ -1,3 +1,47 @@
+export function whichGuardWasAsleepMostOnASpecificMinute(asleepTimePerGuard : {[key: number]: number[]}) : number[] {
+    let mostAsleepGuard : number = 0;
+    let highestFrequency : number = 0;
+    let mostSleptMinute : number = -1;
+    for(let guard in asleepTimePerGuard) {
+        if (asleepTimePerGuard[guard][0] > highestFrequency) {
+            mostAsleepGuard = parseInt(guard);
+            highestFrequency = asleepTimePerGuard[guard][0];
+            mostSleptMinute = asleepTimePerGuard[guard][1];
+        }
+    }
+    return [mostAsleepGuard, mostSleptMinute];
+}
+
+export function determineMostSleptMinutePerGuard(shiftsPerGuard: {[key: number]: Date[]}): {[key: number]: number[]} {
+    let mostSleptMinutePerGuard : {[key: number]: number[]} = {};
+
+    for(let guard in shiftsPerGuard) {
+        let times = shiftsPerGuard[guard];
+        let mostSleptMinute : number = -1;
+        let hour : {[key: number]: number} = {};
+
+        for(let t = 0; t < times.length; t = t + 2) {
+            for(let m = times[t].getMinutes(); m < times[t + 1].getMinutes(); m++) {
+                if(!(m in hour)) {
+                    hour[m] = 0;
+                }
+                hour[m] = hour[m] + 1;
+            }
+        }
+
+        let highestFrequency : number = 0;
+        for(let minute in hour) {
+            if(hour[minute] > highestFrequency) {
+                mostSleptMinute = parseInt(minute);
+                highestFrequency = hour[minute];
+            }
+        }
+        mostSleptMinutePerGuard[guard] = [highestFrequency, mostSleptMinute];
+        console.log('guard: ' + guard + ', most slept minute: ' + mostSleptMinute + ', highestFrequency: ' + highestFrequency);
+    }
+    return mostSleptMinutePerGuard;
+}
+
 export function whichGuardWasAsleepMost(asleepTimePerGuard : {[key: number]: number[]}) : number[] {
     let mostAsleepGuard : number = 0;
     let mostAsleepTime : number = 0;
