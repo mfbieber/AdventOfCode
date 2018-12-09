@@ -1,4 +1,4 @@
-import {ChronalCoordinateSystem, Coordinate, calculateDistance, positionChronalCoordinatesIntoCoordinateSystem, calculateOwnership, calculateLargestFiniteAreas} from "./Day6";
+import {ChronalCoordinateSystem, Coordinate, calculateDistance, positionChronalCoordinatesIntoCoordinateSystem, calculateOwnership, calculateLargestFiniteAreas, calculateRegionSize} from "./Day6";
 import {expect} from "chai";
 
 describe('Chronal coordinates', () => {
@@ -79,6 +79,12 @@ describe('Chronal coordinates', () => {
         let largestArea : number = calculateLargestFiniteAreas(calculateOwnership(positionChronalCoordinatesIntoCoordinateSystem(testInput), testInput), testInput);
 
         expect(largestArea).to.equal(17);
+    });
+
+    it('calculates the size of the region containing all coordinates that have a total distance to all given coordinates of less than 32', () => {
+        let regionSize : number = calculateRegionSize(testInput, 32);
+
+        expect(regionSize).to.equal(16);
     });
 }
 )

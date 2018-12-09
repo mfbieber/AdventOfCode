@@ -1,3 +1,20 @@
+export function calculateRegionSize(coordinates : number[][], limit : number) : number {
+    let coordinateSystem : ChronalCoordinateSystem = new ChronalCoordinateSystem(coordinates);
+    let area : number = 0;
+    for(let x = coordinateSystem.xValueMin + 1; x <= coordinateSystem.xValueMax - 1; x++) {
+        for (let y = coordinateSystem.yValueMin + 1; y <= coordinateSystem.yValueMax - 1; y++) {
+            let distance : number = 0;
+            for(let coordinate of coordinates) {
+                distance = distance + calculateDistance(new Coordinate(coordinate, coordinate[0] + ',' + coordinate[1]), coordinateSystem.coordinateSystem[x + ',' + y])
+            }
+            if (distance < limit) {
+                area++
+            }
+        }
+    }
+    return area;
+}
+
 export function calculateLargestFiniteAreas(coordinateSystem : ChronalCoordinateSystem, coordinates : number[][]) : number {
     let finiteAreaCoordinates : string[] = [];
     for (let coordinate of coordinates) {
@@ -114,12 +131,20 @@ export class Coordinate {
 }
 
 export class ChronalCoordinateSystem {
+    get distanceToAllOtherCoordinates(): { [p: string]: number } {
+        return this._distanceToAllOtherCoordinates;
+    }
+
+    set distanceToAllOtherCoordinates(value: { [p: string]: number }) {
+        this._distanceToAllOtherCoordinates = value;
+    }
 
     xValueMin : number;
     yValueMin : number;
     xValueMax: number;
     yValueMax : number;
     coordinateSystem : {[key : string] : Coordinate} = {};
+    private _distanceToAllOtherCoordinates : {[key: string] : number} = {};
 
     constructor(containedElements : number[][]) {
         let biggestXValue : number = -1;
