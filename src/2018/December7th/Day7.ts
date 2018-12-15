@@ -39,10 +39,12 @@ export function determineDependencies(points : Set<Point>) : Set<Point> {
     return points;
 }
 
+type PointName = string
+
 export function generatePoints(input: string[]) : Set<Point> {
     let splittedInput : string[][] = splitInput(input);
     let points : Set<Point> = new Set();
-    let pointedTo : Set<string> = new Set();
+    let pointedTo : Set<PointName> = new Set();
     for (let line of splittedInput) {
         let newPoint : Point = new Point(line[0]);
         if (points.size == 0) {
@@ -65,18 +67,13 @@ export function generatePoints(input: string[]) : Set<Point> {
             }
         }
     }
-    for (let pointerTo of pointedTo) {
-        let pointContained = false;
-        for (let point of points) {
-            if (point.node == pointerTo) {
-                pointContained = true;
-            }
-        }
-        if (!pointContained) {
+    const pointsAsStrings = [...points].map(point => point.node);
+    pointedTo.forEach(pointerTo => {
+        if (!pointsAsStrings.includes(pointerTo)) {
             let newPoint : Point = new Point(pointerTo);
             points.add(newPoint);
         }
-    }
+    });
     return points;
 }
 
