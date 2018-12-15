@@ -1,4 +1,4 @@
-import {generatePoints, determineOrder, determineDependencies, splitInput} from "./Day7";
+import {generatePoints, determineOrder, determineDependencies, splitInput, determineTime} from "./Day7";
 import {expect} from "chai";
 
 describe('The Sum of Its Parts', () => {
@@ -27,5 +27,9 @@ describe('The Sum of Its Parts', () => {
         expectedSortedPoints[5] = 'E';
 
         expect(determineOrder(determineDependencies(generatePoints(testInput)))).to.deep.equal(expectedSortedPoints);
+    });
+
+    it('should take 15 seconds for two workes to complete the steps', () => {
+        expect(determineTime(2, 0, determineDependencies(generatePoints(testInput)))).to.equal(15);
     });
 })

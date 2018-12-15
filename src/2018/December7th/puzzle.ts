@@ -1,4 +1,4 @@
-import {generatePoints, determineOrder, determineDependencies, splitInput} from "./Day7";
+import {generatePoints, determineOrder, determineDependencies, splitInput, determineTime} from "./Day7";
 
 const fs = require('fs');
 let inputArray : string[] = fs.readFileSync('src/2018/December7th/input').toString().split("\n");
@@ -9,3 +9,6 @@ for (let step of steps) {
     outputString= outputString.concat(step);
 }
 console.log(outputString);
+
+let time : number = determineTime(5, 60, determineDependencies(generatePoints(inputArray)));
+console.log(time);
