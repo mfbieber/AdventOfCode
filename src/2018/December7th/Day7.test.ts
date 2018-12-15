@@ -1,4 +1,4 @@
-import {determineStartingPoint, generatePoints, Point, sortPoints, splitInput} from "./Day7";
+import {generatePoints, determineOrder, determineDependencies, splitInput} from "./Day7";
 import {expect} from "chai";
 
 describe('The Sum of Its Parts', () => {
@@ -17,35 +17,15 @@ describe('The Sum of Its Parts', () => {
         expect(splitInput(testInput)).to.deep.equal(expectedSplittedInput);
     });
 
-    it('should determine the starting point', () => {
-        expect(determineStartingPoint(generatePoints(testInput))[1].node).to.equal('C');
-    });
-
     it ('should sort points to execution order', () => {
-        let pointC = new Point('C');
-        pointC.pointingTo.push('A');
-        pointC.pointingTo.push('F');
-        let pointA = new Point('A');
-        pointA.pointingTo.push('B');
-        pointA.pointingTo.push('D');
-        let pointB = new Point('B');
-        pointB.pointingTo.push('E');
-        let pointD = new Point('D');
-        pointB.pointingTo.push('E');
-        let pointF = new Point('F');
-        pointB.pointingTo.push('E');
-        let pointE = new Point('E');
+        let expectedSortedPoints : string[] = [];
+        expectedSortedPoints[0] = 'C';
+        expectedSortedPoints[1] = 'A';
+        expectedSortedPoints[2] = 'B';
+        expectedSortedPoints[3] = 'D';
+        expectedSortedPoints[4] = 'F';
+        expectedSortedPoints[5] = 'E';
 
-        let expectedSortedPoints : {[key : number] : Point} = {};
-        expectedSortedPoints[1] = pointC;
-        expectedSortedPoints[2] = pointA;
-        expectedSortedPoints[3] = pointB;
-        expectedSortedPoints[4] = pointD;
-        expectedSortedPoints[5] = pointF;
-        expectedSortedPoints[6] = pointE;
-
-        expect(sortPoints(testInput)).to.deep.equal(expectedSortedPoints);
-
+        expect(determineOrder(determineDependencies(generatePoints(testInput)))).to.deep.equal(expectedSortedPoints);
     });
-
 })

@@ -1,112 +1,80 @@
-export function sortPoints(input: string[]) : {[key: number] : Point} {
-    let points : {[key: string] : Point} = generatePoints(input);
-    let pointKeysDone : {[key: string] : boolean} = {};
-    let maxsize : number = 0;
-    for (let point in points) {
-        maxsize++;
-        pointKeysDone[point] = false;
+export function determineOrder(points : Set<Point>) : string[] {
+    let done : string[] = [];
+    let readyToDo : string[] = [];
+    let remainingPoints : Set<Point> = points;
+    while (remainingPoints.size > 0) {
+        iterateForOrder(remainingPoints, done, readyToDo);
     }
-    let sortedStartingPoints : {[key: number] : Point} = determineStartingPoint(points);
-    for (let sortedStartingPoint in sortedStartingPoints) {
-        points[sortedStartingPoint] = sortedStartingPoints[sortedStartingPoint];
-        pointKeysDone[sortedStartingPoints[sortedStartingPoint].node] = true;
+    return done;
+}
+
+export function iterateForOrder(remainingPoints : Set<Point>, done : string[], readyToDo : string[]) {
+    for (let remainingPoint of remainingPoints) {
+        let ready = true;
+        for (let remainingDependency of remainingPoint.preceededBy){
+            if (!done.includes(remainingDependency)) {
+                ready = false;
+            }
+        }
+        if(ready) {
+            readyToDo.push(remainingPoint.node);
+            remainingPoints.delete(remainingPoint);
+        }
     }
-    let size : number = 1;
-    while (size <= maxsize) {
-        let workInProgress : [{[key: number] : Point}, {[key: string] : boolean}] = orderPointsIteration(points, pointKeysDone);
-        points = workInProgress[0];
-        pointKeysDone = workInProgress[1];
-        console.log(points);
-        console.log(pointKeysDone);
-        size++;
+    readyToDo.sort((a, b) => a.localeCompare(b));
+    done.push(readyToDo[0]);
+    readyToDo.splice(0, 1);
+}
+
+export function determineDependencies(points : Set<Point>) : Set<Point> {
+    for (let point of points) {
+        for (let pointToCompareTo of points) {
+            if (point.node != pointToCompareTo.node) {
+                if (pointToCompareTo.pointingTo.has(point.node)) {
+                    point.preceededBy.add(pointToCompareTo.node);
+                }
+            }
+        }
     }
-    console.log(points);
     return points;
 }
 
-export function orderPointsIteration(points : {[key: string] : Point}, pointKeysDone : {[key: string] : boolean}) : [{[key: number] : Point}, {[key: string] : boolean}] {
-    let needed : boolean = true;
-    for (let donePoint in pointKeysDone) {
-       let count : number = 0;
-       for (let point in points) {
-           count++
-       }
-       for (let pointKeyDone in pointKeysDone) {
-           if (pointKeysDone[pointKeyDone]) {
-               count--;
-           }
-       }
-       if (pointKeysDone[donePoint]) { //if the point has already been done
-           let pointers : string[] = points[donePoint].pointingTo;
-           pointers.sort((a, b) => a.localeCompare(b));
-           for (let pointer of pointers) { //take the first pointer to continue with
-               for (let donePoint2 in pointKeysDone) {
-                   if (!pointKeysDone[donePoint2]) { //take the points not done yet
-                       let donePoint2pointers : string[] = points[donePoint2].pointingTo;
-                       for (let donePoint2Pointer in donePoint2pointers) {
-                           if (donePoint2Pointer != pointer) { //check if one of them points to the pointer to continue with
-                                needed = false;
-                           }
-                       }
-                   }
-               }
-               if (!needed) {
-                   points[count] = points[pointer];
-                   pointKeysDone[pointer] = true;
-               }
-           }
-       }
-
-   }
-   return [points, pointKeysDone];
-}
-
-export function determineStartingPoint(points : {[key: string] : Point}) : {[key: number] : Point} {
-    let nodes : string[] = [];
-    let startingNodes : string[] = [];
-    let sortedStartingPoints : {[key: number] : Point} = {};
-    for (let point in points) {
-        nodes.push(point);
-    }
-    for (let node of nodes) {
-        let pointingToNode = false;
-        for (let point in points) {
-            for (let pointer of points[point].pointingTo) {
-                if (pointer == node) {
-                    pointingToNode = true;
-                    break;
-                }
-            }
-        }
-        if (!pointingToNode) {
-            startingNodes.push(node);
-        }
-    }
-    startingNodes.sort((a, b) => a.localeCompare(b));
-    let count : number = 1;
-    for (let startingNode of startingNodes) {
-        sortedStartingPoints[count] = points[startingNode];
-        sortedStartingPoints[count].neededBy.push('none');
-        sortedStartingPoints[count].order = count;
-        count++;
-    }
-    return sortedStartingPoints;
-}
-
-export function generatePoints(input: string[]) : {[key: string] : Point} {
+export function generatePoints(input: string[]) : Set<Point> {
     let splittedInput : string[][] = splitInput(input);
-    let points : {[key: string] : Point} = {};
-    for (let element of splittedInput) {
-        if (!points[element[0]]) {
-            points[element[0]] = new Point(element[0]);
-            points[element[0]].pointingTo.push(element[1]);
+    let points : Set<Point> = new Set();
+    let pointedTo : Set<string> = new Set();
+    for (let line of splittedInput) {
+        let newPoint : Point = new Point(line[0]);
+        if (points.size == 0) {
+            newPoint.pointingTo.add(line[1]);
+            pointedTo.add(line[1]);
+            points.add(newPoint);
         } else {
-            for (let pointer of points[element[0]].pointingTo) {
-                if (pointer != element[1]) {
-                    points[element[0]].pointingTo.push(element[1]);
-                    break;
+            let alreadyContained : boolean = false;
+            for (let alreadyContainedPoint of points) {
+                if (alreadyContainedPoint.node == newPoint.node) {
+                    alreadyContainedPoint.pointingTo.add(line[1]);
+                    pointedTo.add(line[1]);
+                    alreadyContained = true;
                 }
             }
+            if (!alreadyContained) {
+                newPoint.pointingTo.add(line[1]);
+                pointedTo.add(line[1]);
+                points.add(newPoint);
+            }
+        }
+    }
+    for (let pointerTo of pointedTo) {
+        let pointContained = false;
+        for (let point of points) {
+            if (point.node == pointerTo) {
+                pointContained = true;
+            }
+        }
+        if (!pointContained) {
+            let newPoint : Point = new Point(pointerTo);
+            points.add(newPoint);
         }
     }
     return points;
@@ -129,23 +97,23 @@ export class Point {
     set order(value: number) {
         this._order = value;
     }
-    get neededBy(): string[] {
-        return this._neededBy;
+    get preceededBy(): Set<string> {
+        return this._preceededBy;
     }
 
-    set neededBy(value: string[]) {
-        this._neededBy = value;
+    set preceededBy(value: Set<string>) {
+        this._preceededBy = value;
     }
-    get pointingTo(): string[] {
+    get pointingTo(): Set<string> {
         return this._pointingTo;
     }
 
-    set pointingTo(value: string[]) {
+    set pointingTo(value: Set<string>) {
         this._pointingTo = value;
     }
     node : string;
-    private _pointingTo : string[] = [];
-    private _neededBy : string[] = [];
+    private _pointingTo : Set<string>  = new Set();
+    private _preceededBy : Set<string> = new Set();
     private _order : number = 0;
 
     constructor(node : string) {
