@@ -1,4 +1,4 @@
-import {constructTree, Knoten} from "./Day8";
+import {buildNodeSet, constructTree, Knoten, determineValue} from "./Day8";
 import {expect} from "chai";
 
 describe('Memory Maneuver', () => {
@@ -17,14 +17,20 @@ describe('Memory Maneuver', () => {
         nodeC.metadataEntries = [2];
         nodeD.metadataEntries = [99];
 
-        type Tree = Set<Knoten>;
+        type NodeSet = Set<Knoten>;
 
-        let tree : Tree = new Set();
-        tree.add(nodeA);
-        tree.add(nodeB);
-        tree.add(nodeC);
-        tree.add(nodeD);
+        let nodeSet : NodeSet = new Set();
+        nodeSet.add(nodeA);
+        nodeSet.add(nodeB);
+        nodeSet.add(nodeC);
+        nodeSet.add(nodeD);
 
-        expect(constructTree(testInput)).to.deep.equal(tree);
+        expect(buildNodeSet(testInput)).to.deep.equal(nodeSet);
     });
+
+    it('should return a value of 66 for the first node of the test data', () => {
+        let parentNode : Knoten = constructTree(testInput);
+
+        expect(determineValue(parentNode, 0)).to.equal(66);
+    })
 })

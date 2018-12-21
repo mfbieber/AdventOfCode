@@ -1,12 +1,31 @@
+export function determineValue(node : Knoten, value : number) : number {
+    if (node.numberOfChildren == 0) {
+        for (let metaDataEntry of node.metadataEntries) {
+            value = value + metaDataEntry;
+        }
+    } else {
+        for (let metaDataEntry of node.metadataEntries) {
+            if (node.children.length >= metaDataEntry) {
+                value = determineValue(node.children[metaDataEntry - 1], value);
+            }
+        }
+    }
+    return value;
+}
 
-type Tree = Set<Knoten>;
-export function constructTree(header : number[]) : Tree {
+type NodeSet = Set<Knoten>;
+export function buildNodeSet(header : number[]) : NodeSet {
+    let parentNode : Knoten = constructTree(header);
+    let nodeSet : NodeSet = new Set();
+    addNodesToSet(parentNode, nodeSet);
+    console.log(nodeSet);
+    return nodeSet;
+}
+
+export function constructTree(header : number[]) : Knoten {
     let firstNode : Knoten = new Knoten(header[0], header[1]);
     addChildren(header, 2, firstNode);
-    let tree : Tree = new Set();
-    addNodesToTree(firstNode, tree);
-    console.log(tree);
-    return tree;
+    return firstNode;
 }
 
 export function addChildren(header : number[], position : number, node : Knoten)  : number {
@@ -30,11 +49,11 @@ export function addMetaData (header : number[], position : number, node : Knoten
     return position;
 }
 
-export function addNodesToTree(node : Knoten, tree : Tree) {
+export function addNodesToSet(node : Knoten, tree : NodeSet) {
     tree.add(node);
     for (let child of node.children) {
        tree.add(child);
-       addNodesToTree(child, tree);
+       addNodesToSet(child, tree);
     }
 }
 
