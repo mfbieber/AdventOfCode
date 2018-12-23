@@ -31,9 +31,9 @@ export function findMessage(messageInput : string) : string {
         /*if (fieldSize/smallestSize > 10) {
             break;
         }*/
-        if((seconds % 100) == 0) {
+        /*if((seconds % 100) == 0) {
             console.log(seconds/15000 * 100 + ' %');
-        }
+        }*/
     }
     return generateOutputField(messageStars);
 }
