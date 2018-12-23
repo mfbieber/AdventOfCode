@@ -1,4 +1,4 @@
-export function playGame(numberOfPlayers : number, marbleHighestValue : number) : [{[key: number] : number}, {[key : number] : Knoten}, string[]] {
+export function playGame(numberOfPlayers : number, marbleHighestValue : number, calculateNodesStrings : boolean) : [{[key: number] : number}, {[key : number] : Knoten}, string[]] {
     let nodes : {[key : number] : Knoten} = {};
     let players : {[key: number] : number} = {};
     let nodesStrings : string[] = ['(0) '] ;
@@ -29,29 +29,35 @@ export function playGame(numberOfPlayers : number, marbleHighestValue : number) 
                 previousNode = node;
             }
             nodes[marbleValue] = node;
-            /*let value : number = 0;
-            let nodesString : string = '';
-            do {
-                if (nodes[value] != undefined) {
-                    if (value == marbleValue) {
-                        nodesString = nodesString.concat('(' + nodes[value].marble.toString() + ')' + ' ');
-                    } else {
-                        nodesString = nodesString.concat(nodes[value].marble.toString() + ' ');
-                    }
-                    value = nodes[value].marbleRight.marble;
-                }
-            } while (value != 0);
-            nodesStrings.push(nodesString);*/
+            if (calculateNodesStrings) {
+                nodesStrings.push(calculateNodesString(nodes, marbleValue));
+            }
             if (marbleValue == marbleHighestValue) {
                 return [players, nodes, nodesStrings];
             }
             marbleValue++;
-            if((marbleValue % 100) == 0) {
+            /*if((marbleValue % 100) == 0) {
                 console.log(marbleValue/marbleHighestValue * 100 + ' %');
-            }
+            }*/
         }
     }
     return [players, nodes, nodesStrings];
+}
+
+export function calculateNodesString(nodes : {[key : number] : Knoten}, marbleValue : number) : string {
+    let value : number = 0;
+    let nodesString : string = '';
+    do {
+        if (nodes[value] != undefined) {
+            if (value == marbleValue) {
+                nodesString = nodesString.concat('(' + nodes[value].marble.toString() + ')' + ' ');
+            } else {
+                nodesString = nodesString.concat(nodes[value].marble.toString() + ' ');
+            }
+            value = nodes[value].marbleRight.marble;
+        }
+    } while (value != 0);
+    return nodesString;
 }
 
 export function determineHighScore(players : {[key: number] : number}) : number {
