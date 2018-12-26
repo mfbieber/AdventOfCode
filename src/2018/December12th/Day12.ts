@@ -1,7 +1,9 @@
+import {expect} from "chai";
+
 export function readInitialState(initialState : string) : {[key: number] : string } {
     let parsedInitialState : {[key: number] : string } = {};
-    for (let i = 1; i <= initialState.length; i++) {
-        parsedInitialState[i] = initialState.charAt(i-1);
+    for (let i = 0; i < initialState.length; i++) {
+        parsedInitialState[i] = initialState.charAt(i);
     }
     return parsedInitialState;
 }
@@ -18,15 +20,25 @@ export function readNotes(notes : string) :  {[key: number] : string[]} {
 }
 
 export class Pots {
-    pots : Map<number, Pot> = new Map();
-    keys : number[] = [];
+    pots : Pot[] = [];
+
+    public countPotsAfterGenerations(generations : number) : number {
+        for (let i = 1; i <= generations; i++) {
+            this.applyNotesToPots();
+        }
+        let potNumber : number = 0;
+        for (let pot of this.pots) {
+            if (pot.containsPlant) {
+                potNumber = potNumber + pot.potNumber;
+            }
+        }
+        return potNumber;
+    }
 
     public generateOutputStateString() : string {
-        let keys : number[] = this.determineAllKeys(this.pots);
         let outputString : string = '';
-        for (let key of keys) {
-            console.log(key);
-            if (this.pots.get(key)!.containsPlant) {
+        for (let pot of this.pots) {
+            if (pot.containsPlant) {
                 outputString = outputString.concat('#');
             } else {
                 outputString = outputString.concat('.');
@@ -35,45 +47,51 @@ export class Pots {
         return outputString;
     }
 
-    private determineAllKeys(pots: Map<number, Pot>) : number[] {
-        return Array.from(this.pots.keys()).sort((a,b) => a-b);
+    private addPotsToStart(pots : Pot[]){
+         pots.unshift(new Pot(pots[0].potNumber - 1, false));
     }
 
+    private addPotstoEnd(pots : Pot[]) {
+        pots.push(new Pot(pots[pots.length-1].potNumber + 1, false));
+    }
+
+
     public applyNotesToPots() {
-        let keys : number[] = this.determineAllKeys(this.pots);
-        if(this.pots.get(keys[0])!.containsPlant) {
-            this.pots.set(keys[0]-1, new Pot(keys[0]-1, false));
-            this.pots.set(keys[0]-2, new Pot(keys[0]-2, false));
+        let enoughEmptyPots : boolean = false;
+        while (!enoughEmptyPots) {
+            let enoughEmptyPotsAtStart : boolean = false;
+            let enoughEmptyPotsAtEnd : boolean = false;
+            if (this.pots[0].containsPlant || this.pots[1].containsPlant || this.pots[2].containsPlant) {
+                this.addPotsToStart(this.pots);
+            } else {
+                enoughEmptyPotsAtStart = true;
+            }
+            if (this.pots[this.pots.length-1].containsPlant || this.pots[this.pots.length-2].containsPlant || this.pots[this.pots.length-3].containsPlant) {
+                this.addPotstoEnd(this.pots);
+            }
+            else {
+                enoughEmptyPotsAtEnd = true;
+            }
+            if (enoughEmptyPotsAtStart && enoughEmptyPotsAtEnd) {
+                enoughEmptyPots = true;
+            }
         }
-        if (this.pots.get(keys[1])!.containsPlant && !this.pots.get(keys[0])!.containsPlant) {
-            this.pots.set(keys[0]-1, new Pot(keys[0]-1, false));
-        }
-        if (this.pots.get(keys[keys.length-1])!.containsPlant) {
-            this.pots.set(keys[keys.length-1]+1, new Pot(keys[keys.length-1]+1, false));
-            this.pots.set(keys[keys.length-1]+2, new Pot(keys[keys.length-1]+2, false));
-        }
-        if (this.pots.get(keys[keys.length-2])!.containsPlant && !this.pots.get(keys[keys.length-1])!.containsPlant) {
-            this.pots.set(keys[keys.length-1]+1, new Pot(keys[keys.length-1]+1, false));
-        }
-        keys = this.determineAllKeys(this.pots);
-        let newGenPots : Map<number, Pot> = new Map(this.pots);
-        for (let key = keys[2]; key <= keys[keys.length-3]; key++) {
+        let newGenPots : Pot[] = Array.from(this.pots);
+        for (let index = 2; index <= newGenPots.length - 3; index++) {
             let hasPlantInNextGen : boolean = false;
             let checkPots : string = '';
-            for (let i = key - 2; i <= key + 2; i++) {
-                checkPots = checkPots.concat(this.pots.get(i)!.toString())
+            for (let i = index - 2; i <= index + 2; i++) {
+                checkPots = checkPots.concat(this.pots[i].toString())
             }
             for (let note in this.notes) {
-                console.log(checkPots + ' ' + this.notes[note][0]);
                 if (checkPots == this.notes[note][0]) {
-                    console.log(this.notes[note][1]);
                     if (this.notes[note][1] == '#') {
                         hasPlantInNextGen = true;
                     }
                     break;
                 }
             }
-            newGenPots.set(key, new Pot(key, hasPlantInNextGen));
+            newGenPots[index] =  new Pot(this.pots[index].potNumber, hasPlantInNextGen);
         }
         this.pots = newGenPots;
     }
@@ -84,7 +102,7 @@ export class Pots {
             if (initialState[entry] == '#') {
                 containsPlant = true;
             }
-            this.pots.set(parseInt(entry), new Pot(parseInt(entry), containsPlant));
+            this.pots.push(new Pot(parseInt(entry), containsPlant));
         }
     }
 }

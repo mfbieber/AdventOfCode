@@ -22,32 +22,52 @@ describe('Subterranean Sustainability', () => {
         '####. => #';
 
     it ('should determine all the states for 20 generations', () => {
-       let expectedGenStates : string[] = [
-           '...#...#....#.....#..#..#..#..',
-           '...##..##...##....#..#..#..##.',
-           '..#.#...#..#.#....#..#..#...#..',
-           '...#.#..#...#.#...#..#..##..##..',
-           '....#...##...#.#..#..#...#...#..',
-           '....##.#.#....#...#..##..##..##.',
-           '...#..###.#...##..#...#...#...#..',
-           '...#....##.#.#.#..##..##..##..##.',
-           '...##..#..#####....#...#...#...#..',
-           '..#.#..#...#.##....##..##..##..##.',
-           '...#...##...#.#...#.#...#...#...#..',
-           '...##.#.#....#.#...#.#..##..##..##.',
-           '..#..###.#....#.#...#....#...#...#..',
-           '..#....##.#....#.#..##...##..##..##.',
-           '..##..#..#.#....#....#..#.#...#...#..',
-           '.#.#..#...#.#...##...#...#.#..##..##.',
-           '..#...##...#.#.#.#...##...#....#...#..',
-           '..##.#.#....#####.#.#.#...##...##..##..',
-           '.#..###.#..#.#.#######.#.#.#..#.#...#..',
-           '.#....##....#####...#######....#.#..##.'
-       ]
+        let expectedGenStates : string[] = [
+           '...#...#....#.....#..#..#..#...',
+           '...##..##...##....#..#..#..##..',
+           '..#.#...#..#.#....#..#..#...#...',
+           '....#.#..#...#.#...#..#..##..##..',
+           '.....#...##...#.#..#..#...#...#...',
+           '.....##.#.#....#...#..##..##..##..',
+           '....#..###.#...##..#...#...#...#...',
+           '....#....##.#.#.#..##..##..##..##..',
+           '....##..#..#####....#...#...#...#...',
+           '...#.#..#...#.##....##..##..##..##..',
+           '....#...##...#.#...#.#...#...#...#...',
+           '....##.#.#....#.#...#.#..##..##..##..',
+           '...#..###.#....#.#...#....#...#...#...',
+           '...#....##.#....#.#..##...##..##..##..',
+           '...##..#..#.#....#....#..#.#...#...#...',
+           '..#.#..#...#.#...##...#...#.#..##..##..',
+           '....#...##...#.#.#.#...##...#....#...#...',
+           '....##.#.#....#####.#.#.#...##...##..##..',
+           '...#..###.#..#.#.#######.#.#.#..#.#...#...',
+           '...#....##....#####...#######....#.#..##..'
+        ];
+
+        let parsedInitialState = readInitialState(initialState);
+        let parsedNotes = readNotes(notes);
+        let pots : Pots = new Pots(parsedInitialState, parsedNotes);
+
+        for (let i = 1; i <= 20; i++) {
+            pots.applyNotesToPots();
+            let twentyGenState : string = pots.generateOutputStateString();
+            expect(twentyGenState).to.equal(expectedGenStates[i-1]);
+        }
+    });
+
+    it ('should determine the correct potNumberSum after 20 generations', () => {
+        let parsedInitialState = readInitialState(initialState);
+        let parsedNotes = readNotes(notes);
+        let pots : Pots = new Pots(parsedInitialState, parsedNotes)
+
+        let potNumberSum : number = pots.countPotsAfterGenerations(20);
+
+        expect(potNumberSum).to.equal(325);
     });
 
     it ('should determine the state of the first generation', () => {
-        let expectedFirstGenState : string = '..#...#....#.....#..#..#..#..';
+        let expectedFirstGenState : string = '...#...#....#.....#..#..#..#...';
 
         let parsedInitialState = readInitialState(initialState);
         let parsedNotes = readNotes(notes);
@@ -60,32 +80,32 @@ describe('Subterranean Sustainability', () => {
     });
 
     it ('should construct the initial pots from the parsed initial state', () => {
-        let expectedPots : Map<number, Pot> = new Map();
-        expectedPots.set(1, new Pot(1, true));
-        expectedPots.set(2, new Pot(2, false));
-        expectedPots.set(3, new Pot(3, false));
-        expectedPots.set(4, new Pot(4, true));
-        expectedPots.set(5, new Pot(5, false));
-        expectedPots.set(6, new Pot(6, true));
-        expectedPots.set(7, new Pot(7, false));
-        expectedPots.set(8, new Pot(8, false));
-        expectedPots.set(9, new Pot(9, true));
-        expectedPots.set(10, new Pot(10, true));
-        expectedPots.set(11, new Pot(11, false));
-        expectedPots.set(12, new Pot(12, false));
-        expectedPots.set(13, new Pot(13, false));
-        expectedPots.set(14, new Pot(14, false));
-        expectedPots.set(15, new Pot(15, false));
-        expectedPots.set(16, new Pot(16, false));
-        expectedPots.set(17, new Pot(17, true));
-        expectedPots.set(18, new Pot(18, true));
-        expectedPots.set(19, new Pot(19, true));
-        expectedPots.set(20, new Pot(20, false));
-        expectedPots.set(21, new Pot(21, false));
-        expectedPots.set(22, new Pot(22, false));
-        expectedPots.set(23, new Pot(23, true));
-        expectedPots.set(24, new Pot(24, true));
-        expectedPots.set(25, new Pot(25, true));
+        let expectedPots : Pot[] = [];
+        expectedPots.push(new Pot(0, true));
+        expectedPots.push(new Pot(1, false));
+        expectedPots.push(new Pot(2, false));
+        expectedPots.push(new Pot(3, true));
+        expectedPots.push(new Pot(4, false));
+        expectedPots.push(new Pot(5, true));
+        expectedPots.push(new Pot(6, false));
+        expectedPots.push(new Pot(7, false));
+        expectedPots.push(new Pot(8, true));
+        expectedPots.push(new Pot(9, true));
+        expectedPots.push(new Pot(10, false));
+        expectedPots.push(new Pot(11, false));
+        expectedPots.push(new Pot(12, false));
+        expectedPots.push(new Pot(13, false));
+        expectedPots.push(new Pot(14, false));
+        expectedPots.push(new Pot(15, false));
+        expectedPots.push(new Pot(16, true));
+        expectedPots.push(new Pot(17, true));
+        expectedPots.push(new Pot(18, true));
+        expectedPots.push(new Pot(19, false));
+        expectedPots.push(new Pot(20, false));
+        expectedPots.push(new Pot(21, false));
+        expectedPots.push(new Pot(22, true));
+        expectedPots.push(new Pot(23, true));
+        expectedPots.push(new Pot(24, true));
 
         let parsedInitialState = readInitialState(initialState);
         let parsedNotes = readNotes(notes);
@@ -97,9 +117,9 @@ describe('Subterranean Sustainability', () => {
 
     it('should parse the initial state', () => {
         let expectedParsedInitialState : {[key: number] : string } = {
-            1: '#', 2: '.', 3: '.', 4: '#', 5: '.', 6: '#', 7: '.', 8: '.', 9: '#', 10: '#',
-            11: '.', 12: '.', 13: '.', 14: '.', 15: '.', 16: '.', 17: '#', 18: '#', 19: '#', 20: '.',
-            21: '.', 22: '.', 23: '#', 24: '#', 25: '#'
+            0: '#', 1: '.', 2: '.', 3: '#', 4: '.', 5: '#', 6: '.', 7: '.', 8: '#', 9: '#',
+            10: '.', 11: '.', 12: '.', 13: '.', 14: '.', 15: '.', 16: '#', 17: '#', 18: '#', 19: '.',
+            20: '.', 21: '.', 22: '#', 23: '#', 24: '#'
         };
 
         expect(readInitialState(initialState)).to.deep.equal(expectedParsedInitialState);
