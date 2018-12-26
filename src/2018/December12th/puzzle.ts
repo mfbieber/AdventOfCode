@@ -40,6 +40,12 @@ let notes : string =
 let parsedInitialState = readInitialState(initialState);
 let parsedNotes = readNotes(notes);
 let pots : Pots = new Pots(parsedInitialState, parsedNotes);
-let potNumber : number = pots.countPotsAfterGenerations(20);
 
-console.log(potNumber);
+/*let potNumber : number = pots.countPotsAfterGenerations(20);
+console.log(potNumber);*/
+
+let fityBillionNumber : number = pots.iterateThroughGenerationsUntilStable(50000000000);
+console.log(fityBillionNumber);
+
+
+

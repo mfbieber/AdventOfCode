@@ -22,10 +22,35 @@ export function readNotes(notes : string) :  {[key: number] : string[]} {
 export class Pots {
     pots : Pot[] = [];
 
+    public iterateThroughGenerationsUntilStable(maxGeneration : number) : number {
+        let previousGeneration : number = 0;
+        let thisGeneration : number = 0;
+        let previousDifference : number = 0;
+        let maxGenerationNumber : number = 0;
+        for (let i = 1; i <= maxGeneration; i++) {
+            this.applyNotesToPots();
+            thisGeneration = this.calculatePotNumber();
+            if(i > 100 && (thisGeneration - previousGeneration) == previousDifference) {
+                let slope : number = previousDifference;
+                let offset : number = thisGeneration - (i * slope);
+                maxGenerationNumber = maxGeneration * slope + offset;
+                break;
+            } else {
+                previousDifference = thisGeneration - previousGeneration;
+                previousGeneration = thisGeneration;
+            }
+        }
+        return maxGenerationNumber;
+    }
+
     public countPotsAfterGenerations(generations : number) : number {
         for (let i = 1; i <= generations; i++) {
             this.applyNotesToPots();
         }
+        return this.calculatePotNumber();
+    }
+
+    private calculatePotNumber() : number {
         let potNumber : number = 0;
         for (let pot of this.pots) {
             if (pot.containsPlant) {
