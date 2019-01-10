@@ -2,10 +2,33 @@ export class Track{
     coordinates : string[][] = [];
     carts : Set<Cart> = new Set();
     cleanTrackCoordinates : string[][] = [];
-    firstCrash : string = '';
+    crash : string = '';
+    crashes : string[] = [];
+    nextTickCarts : Set<Cart> = new Set();
+
+    public findSurvivor() {
+        while (this.carts.size != 1) {
+            this.raceAndRemoveCrash();
+        }
+    }
+
+    public raceAndRemoveCrash() {
+        this.crashes = new Array(0);
+        this.moveCarts();
+        for (let crash of this.crashes) {
+            let xCrashPosition: number = parseInt(crash.split(',')[0]);
+            let yCrashPosition: number = parseInt(crash.split(',')[1]);
+            for (let cart of this.carts) {
+                if (cart.xPosition == xCrashPosition && cart.yPosition == yCrashPosition) {
+                    this.coordinates[cart.yPosition][cart.xPosition] = this.cleanTrackCoordinates[cart.yPosition][cart.xPosition];
+                    this.carts.delete(cart);
+                }
+            }
+        }
+    }
 
     public runRace() {
-        while (this.firstCrash == '') {
+        while (this.crashes.length == 0) {
             this.moveCarts();
         }
     }
@@ -22,21 +45,30 @@ export class Track{
             }
         }
         for (let cart of orderedCarts) {
+            for (let y = 0; y < this.coordinates.length; y++) {
+                for (let x = 0; x < this.coordinates[y].length; x++) {
+                    if (this.coordinates[y][x] == 'X') {
+                        this.coordinates[y][x] = this.cleanTrackCoordinates[y][x];
+                    }
+                }
+            }
             this.moveToNextPosition(cart);
             this.changeDirection(cart);
         }
     }
 
     public moveToNextPosition(cart : Cart) {
-        this.coordinates[cart.yPosition][cart.xPosition] = this.cleanTrackCoordinates[cart.yPosition][cart.xPosition].valueOf();
-        if (cart.direction == '^') {
-            cart.yPosition = cart.yPosition - 1;
-        } else if (cart.direction == '>') {
-            cart.xPosition = cart.xPosition + 1;
-        } else if (cart.direction == 'v') {
-            cart.yPosition = cart.yPosition + 1;
-        } else if (cart.direction == '<') {
-            cart.xPosition = cart.xPosition - 1;
+        this.coordinates[cart.yPosition][cart.xPosition] = this.cleanTrackCoordinates[cart.yPosition][cart.xPosition];
+        if (!this.crashes.includes(cart.xPosition + ',' + cart.yPosition)) {
+            if (cart.direction == '^') {
+                cart.yPosition = cart.yPosition - 1;
+            } else if (cart.direction == '>') {
+                cart.xPosition = cart.xPosition + 1;
+            } else if (cart.direction == 'v') {
+                cart.yPosition = cart.yPosition + 1;
+            } else if (cart.direction == '<') {
+                cart.xPosition = cart.xPosition - 1;
+            }
         }
     }
 
@@ -94,7 +126,9 @@ export class Track{
         this.coordinates[cart.yPosition][cart.xPosition] = cart.direction;
         if (trackCoordinate != '/' && trackCoordinate != '\\' && trackCoordinate != '+' && trackCoordinate != '-' && trackCoordinate != '|') {
             this.coordinates[cart.yPosition][cart.xPosition] = 'X';
-            this.firstCrash = cart.xPosition + ',' + cart.yPosition;
+            let crash : string = cart.xPosition + ',' + cart.yPosition;
+            this.crash = crash;
+            this.crashes.push(crash);
         }
     }
 

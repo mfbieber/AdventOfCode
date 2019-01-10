@@ -155,11 +155,17 @@ let trackInput : string =
 let track : Track = new Track(trackInput);
 track.runRace();
 
-for (let y = 0; y < track.coordinates.length; y++) {
+/*for (let y = 0; y < track.coordinates.length; y++) {
     let line : string = '';
     for (let x = 0; x < track.coordinates[y].length; x++) {
         line = line.concat(track.coordinates[y][x]);
     }
     console.log(y + ': ' + line);
-};
-console.log(track.firstCrash);
+};*/
+console.log(track.crash);
+
+let survivorTrack : Track = new Track(trackInput);
+survivorTrack.findSurvivor();
+for (let survivor of survivorTrack.carts) {
+    console.log(survivor.xPosition + ',' + survivor.yPosition);
+}

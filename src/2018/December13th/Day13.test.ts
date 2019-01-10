@@ -1,7 +1,7 @@
 import {Track, Cart} from "./Day13";
 import {expect} from "chai";
 
-describe('Mine Cart Madness', () => {
+describe ('Mine Cart Madness', () => {
     let straightTrackInput : string =
         '|\n' +
         'v\n' +
@@ -19,12 +19,74 @@ describe('Mine Cart Madness', () => {
         '\\-+-/  \\-+--/\n' +
         '  \\------/   ';
 
+    let otherTrackInput : string =
+        '/>-<\\  \n' +
+        '|   |  \n' +
+        '| /<+-\\\n' +
+        '| | | v\n' +
+        '\\>+</ |\n' +
+        '  |   ^\n' +
+        '  \\<->/';
+
+    it ('determines the position of the last not crashed car', () => {
+        let otherTrack : Track = new Track(otherTrackInput);
+
+        otherTrack.findSurvivor();
+        let expectedCart : Set<Cart> = new Set();
+        expectedCart.add(new Cart('^', 6, 4));
+
+        expect(otherTrack.carts).to.deep.equal(expectedCart);
+    });
+
+    it ('removes crashed cars', () => {
+        let otherTrack : Track = new Track(otherTrackInput);
+
+        let outcomeAfterOneMove : Track = new Track(
+            '/---\\  \n' +
+            '|   |  \n' +
+            '| v-+-\\\n' +
+            '| | | |\n' +
+            '\\-+-/ |\n' +
+            '  |   |\n' +
+            '  ^---^');
+
+        otherTrack.raceAndRemoveCrash();
+
+        expect(otherTrack.carts).to.deep.equal(outcomeAfterOneMove.carts);
+
+        let outcomeAfterTwoMoves : Track = new Track(
+            '/---\\  \n' +
+            '|   |  \n' +
+            '| /-+-\\\n' +
+            '| v | |\n' +
+            '\\-+-/ |\n' +
+            '  ^   ^\n' +
+            '  \\---/');
+
+        otherTrack.raceAndRemoveCrash();
+
+        expect(otherTrack.carts).to.deep.equal(outcomeAfterTwoMoves.carts);
+
+        let outcomeAfterThreeMoves : Track = new Track(
+            '/---\\  \n' +
+            '|   |  \n' +
+            '| /-+-\\\n' +
+            '| | | |\n' +
+            '\\-+-/ ^\n' +
+            '  |   |\n' +
+            '  \\---/');
+
+        otherTrack.raceAndRemoveCrash();
+
+        expect(otherTrack.carts).to.deep.equal(outcomeAfterThreeMoves.carts);
+    });
+
     it ('finds the position of the first crash', () => {
         let complexTrack : Track = new Track(complexTrackInput);
 
         complexTrack.runRace();
 
-        expect(complexTrack.firstCrash).to.deep.equal(7 + ', ' + 3);
+        expect(complexTrack.crash).to.deep.equal(7 + ',' + 3);
     });
 
     it ('can make carts move on the more complex test track', () => {
