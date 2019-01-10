@@ -28,7 +28,7 @@ export class Track{
     }
 
     public moveToNextPosition(cart : Cart) {
-        this.coordinates[cart.yPosition][cart.xPosition] = this.cleanTrackCoordinates[cart.yPosition][cart.xPosition];
+        this.coordinates[cart.yPosition][cart.xPosition] = this.cleanTrackCoordinates[cart.yPosition][cart.xPosition].valueOf();
         if (cart.direction == '^') {
             cart.yPosition = cart.yPosition - 1;
         } else if (cart.direction == '>') {
@@ -41,7 +41,7 @@ export class Track{
     }
 
     public changeDirection(cart: Cart) {
-        let trackCoordinate : string = this.coordinates[cart.yPosition][cart.xPosition];
+        let trackCoordinate : string = this.coordinates[cart.yPosition][cart.xPosition].toString();
         if (trackCoordinate == '/' && cart.direction == '^') {
             cart.direction = '>';
         } else if (trackCoordinate == '/' && cart.direction == '<') {
@@ -94,15 +94,8 @@ export class Track{
         this.coordinates[cart.yPosition][cart.xPosition] = cart.direction;
         if (trackCoordinate != '/' && trackCoordinate != '\\' && trackCoordinate != '+' && trackCoordinate != '-' && trackCoordinate != '|') {
             this.coordinates[cart.yPosition][cart.xPosition] = 'X';
-            this.firstCrash = cart.xPosition + ', ' + cart.yPosition;
+            this.firstCrash = cart.xPosition + ',' + cart.yPosition;
         }
-        for (let y = 0; y < this.coordinates.length; y++) {
-            let line : string = '';
-            for (let x = 0; x < this.coordinates[y].length; x++) {
-                line = line.concat(this.coordinates[y][x]);
-            }
-            console.log(y + ': ' + line);
-        };
     }
 
     constructor(input : string) {
